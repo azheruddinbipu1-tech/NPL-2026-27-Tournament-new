@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NPL Night Football Premier League 2026/2027</title>
+    <style>
+        /* ===== দ্রুততার জন্য মিনিমাল স্টাইল ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #0a1a0a; padding: 10px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { background: linear-gradient(135deg, #0d3b0d, #1a6b1a); border-radius: 14px; padding: 16px 22px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border: 1px solid rgba(255,215,0,0.12); }
+        .header h1 { color: #fff; font-size: 1.6rem; }
+        .header h1 span { color: #f1c40f; }
+        .header .sponsors { color: #aed6ae; font-size: 0.7rem; text-align: right; }
+        .header .sponsors .powered { color: #f1c40f; font-weight: bold; }
+        .header-actions button { padding: 5px 14px; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; font-size: 11px; margin: 3px; }
+        .btn-admin { background: #f1c40f; color: #1a3a1a; }
+        .btn-public { background: #3498db; color: #fff; }
+        .btn-theme { background: #2c3e50; color: #fff; }
+        .mode-badge { color: #fff; padding: 3px 12px; border-radius: 30px; font-size: 10px; background: rgba(255,255,255,0.12); }
+        .view-toggle { display: flex; justify-content: center; gap: 10px; margin-bottom: 14px; }
+        .view-toggle button { padding: 7px 24px; border: 2px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #aaa; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
+        .view-toggle button.active { background: #f1c40f; color: #1a4a1a; border-color: #f1c40f; }
+        .view-toggle button.admin-btn.active { background: #e74c3c; border-color: #e74c3c; color: #fff; }
+        .card { background: rgba(255,255,255,0.95); border-radius: 14px; padding: 14px 18px; margin-bottom: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.25); }
+        .card h2 { color: #1a3a1a; border-bottom: 3px solid #2d7d2d; padding-bottom: 8px; margin-bottom: 12px; font-size: 1.05rem; }
+        .flex { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+        .flex input, .flex select { flex: 1 1 110px; padding: 6px 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 12px; background: #fff; }
+        button { padding: 6px 16px; border: none; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { transform: scale(1.04); }
+        .btn-primary { background: #2d7d2d; color: #fff; }
+        .btn-danger { background: #e74c3c; color: #fff; }
+        .btn-warning { background: #f39c12; color: #fff; }
+        .btn-blue { background: #2980b9; color: #fff; }
+        .btn-sm { padding: 2px 10px; font-size: 10px; }
+
+        /* ===== লাইভ স্কোরবোর্ড ===== */
+        .live-scoreboard { background: linear-gradient(135deg, #0d2b0d, #1a5a1a); border-radius: 14px; padding: 14px 18px; color: #fff; margin-bottom: 14px; border: 2px solid #f1c40f; }
+        .live-scoreboard .live-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+        .live-scoreboard .live-header h3 { color: #f1c40f; font-size: 1.05rem; }
+        .live-scoreboard .live-status { background: #e74c3c; padding: 2px 12px; border-radius: 30px; font-weight: bold; font-size: 10px; animation: pulse 1.5s infinite; }
+        .live-scoreboard .live-status.inactive { background: #7f8c8d; animation: none; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .live-match-display { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .live-match-display:last-child { border-bottom: none; }
+        .live-match-display .team-name { font-weight: bold; font-size: 0.9rem; }
+        .live-match-display .score-big { font-size: 1.8rem; font-weight: bold; color: #f1c40f; }
+        .live-match-display .match-meta { font-size: 10px; color: #aed6ae; }
+        .live-events-preview { margin-top: 8px; padding: 6px 10px; background: rgba(255,255,255,0.04); border-radius: 8px; font-size: 11px; color: #aed6ae; max-height: 70px; overflow-y: auto; }
+        .event-timeline { max-height: 220px; overflow-y: auto; padding-right: 4px; }
+        .event-item { display: flex; align-items: center; gap: 8px; padding: 4px 8px; margin: 2px 0; border-radius: 6px; background: #f0f8f0; font-size: 11px; }
+        .event-item .time { color: #2d7d2d; font-weight: bold; min-width: 28px; }
+        .event-item .icon { font-size: 14px; }
+        .event-item.goal { border-left: 3px solid #2ecc71; }
+        .event-item.yellow-card { border-left: 3px solid #f1c40f; }
+        .event-item.red-card { border-left: 3px solid #e74c3c; }
+        .event-item.foul { border-left: 3px solid #e67e22; }
+
+        .match-item { background: #f0f8f0; padding: 8px 12px; border-radius: 10px; margin: 5px 0; border-left: 4px solid #2d7d2d; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 5px; }
+        .match-item .teams { font-weight: bold; font-size: 0.85rem; }
+        .status-badge { padding: 2px 10px; border-radius: 30px; font-weight: bold; font-size: 0.6rem; }
+        .status-upcoming { background: #f39c12; color: #fff; }
+        .status-live { background: #e74c3c; color: #fff; animation: pulse 1.5s infinite; }
+        .status-played { background: #27ae60; color: #fff; }
+
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11px; }
+        th, td { padding: 4px 5px; text-align: center; border-bottom: 1px solid #e8ece8; }
+        th { background: #2d7d2d; color: #fff; font-weight: 600; }
+        tr:hover { background: #f0f8f0; }
+        .empty-msg { text-align: center; color: #999; padding: 14px 0; font-size: 0.85rem; }
+
+        .tab-bar { display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap; }
+        .tab-bar button { background: #2c5a2c; color: #ddd; border: none; padding: 5px 14px; border-radius: 30px; cursor: pointer; font-weight: bold; font-size: 10px; }
+        .tab-bar button.active { background: #f1c40f; color: #1a4a1a; }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .login-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); z-index: 999; justify-content: center; align-items: center; }
+        .login-overlay.show { display: flex; }
+        .login-box { background: #fff; padding: 25px; border-radius: 16px; max-width: 340px; width: 90%; }
+        .login-box input { width: 100%; padding: 8px 12px; margin: 5px 0; border: 2px solid #ddd; border-radius: 8px; font-size: 13px; }
+        .login-box button { width: 100%; padding: 9px; background: #2d7d2d; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        .login-box .btn-cancel { background: #95a5a6; margin-top: 5px; }
+        .login-error { color: #e74c3c; font-size: 11px; margin-top: 4px; display: none; }
+
+        .notification { position: fixed; bottom: 20px; right: 20px; background: #2d7d2d; color: #fff; padding: 10px 20px; border-radius: 10px; font-weight: bold; box-shadow: 0 6px 25px rgba(0,0,0,0.3); z-index: 999; display: none; font-size: 12px; }
+        .notification.error { background: #e74c3c; }
+
+        .admin-only { display: block; }
+        .public-only { display: none; }
+        body.public-view .admin-only { display: none !important; }
+        body.public-view .public-only { display: block !important; }
+        body.admin-view .admin-only { display: block !important; }
+        body.admin-view .public-only { display: none !important; }
+
+        .footer-credit { text-align: center; color: #888; font-size: 0.6rem; padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 10px; }
+        .footer-credit .gold { color: #f1c40f; font-weight: bold; }
+
+        @media (max-width: 768px) { .flex input, .flex select { flex: 1 1 100%; } .live-match-display { flex-direction: column; text-align: center; } .live-match-display .team-info { justify-content: center; } .live-match-display .score-big { font-size: 1.5rem; } }
+    </style>
+</head>
+<body>
+
+    <div id="notification" class="notification"></div>
+
+    <!-- ===== লগইন ===== -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-box">
+            <h2>🔐 অ্যাডমিন লগইন</h2>
+            <p>পাসওয়ার্ড: <strong>admin123</strong></p>
+            <input type="password" id="adminPassword" placeholder="পাসওয়ার্ড লিখুন" onkeydown="if(event.key==='Enter') adminLogin()" />
+            <div id="loginError" class="login-error">❌ ভুল পাসওয়ার্ড!</div>
+            <button onclick="adminLogin()">🔓 লগইন</button>
+            <button class="btn-cancel" onclick="closeLogin()">বাতিল</button>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- ===== হেডার ===== -->
+        <div class="header">
+            <div>
+                <h1>⚽ <span>NPL</span> Night Football</h1>
+                <div style="color:#aed6ae;font-size:0.7rem;">Premier League <span style="color:#f1c40f;">2026/2027</span> • এলাকাভিত্তিক</div>
+            </div>
+            <div style="text-align:right;">
+                <div class="sponsors">
+                    <div class="powered">🏆 Powered by: Sky Star Boys Club</div>
+                    <div style="color:#85c1e9;">🤝 Co-sponsored by: Brand RMT, Shakil And Brothers, Sharif And Brothers</div>
+                </div>
+                <div class="header-actions" style="margin-top:5px;">
+                    <span class="mode-badge" id="modeBadge">👀 পাবলিক ভিউ</span>
+                    <button class="btn-public" onclick="setView('public')">👀 পাবলিক</button>
+                    <button class="btn-admin" onclick="openLogin()">🔐 অ্যাডমিন</button>
+                    <button class="btn-theme" onclick="toggleTheme()">🌓 থিম</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== ভিউ টগল ===== -->
+        <div class="view-toggle">
+            <button class="active" id="publicViewBtn" onclick="setView('public')">👀 পাবলিক ভিউ</button>
+            <button id="adminViewBtn" onclick="openLogin()">🔐 অ্যাডমিন প্যানেল</button>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- লাইভ স্কোরবোর্ড (সবার জন্য - এটা সবচেয়ে গুরুত্বপূর্ণ) -->
+        <!-- ========================================================= -->
+        <div class="live-scoreboard" id="liveScoreboard">
+            <div class="live-header">
+                <h3>📺 লাইভ স্কোরবোর্ড</h3>
+                <span class="live-status inactive" id="liveStatus">⏸️ লাইভ নয়</span>
+            </div>
+            <div id="liveMatchesContainer">
+                <div class="empty-msg" style="color:#aed6ae;">কোন লাইভ ম্যাচ চলছে না</div>
+            </div>
+            <div id="liveEventsPreview" class="live-events-preview" style="display:none;"></div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- অ্যাডমিন প্যানেল -->
+        <!-- ========================================================= -->
+        <div class="admin-only">
+            <div class="tab-bar">
+                <button class="active" data-tab="tab-live">📺 লাইভ</button>
+                <button data-tab="tab-players">👕 প্লেয়ার</button>
+                <button data-tab="tab-teams">🏟️ দল</button>
+                <button data-tab="tab-matches">📅 ম্যাচ</button>
+                <button data-tab="tab-standings">🏆 পয়েন্ট টেবিল</button>
+            </div>
+
+            <!-- ===== লাইভ ===== -->
+            <div id="tab-live" class="tab-content active">
+                <div class="card">
+                    <h2>📺 লাইভ ম্যাচ নিয়ন্ত্রণ <span style="background:#2d7d2d;color:#fff;padding:1px 12px;border-radius:30px;font-size:9px;">অ্যাডমিন</span></h2>
+                    <div class="flex">
+                        <select id="liveMatchSelect" onchange="loadLiveMatch()" style="flex:2;">
+                            <option value="">-- ম্যাচ নির্বাচন করুন --</option>
+                        </select>
+                        <button class="btn-primary" onclick="startLiveMatch()">▶️ শুরু</button>
+                        <button class="btn-warning" onclick="pauseLiveMatch()">⏸️ বিরতি</button>
+                        <button class="btn-danger" onclick="endLiveMatch()">⏹️ শেষ</button>
+                        <input type="number" id="matchMinute" placeholder="মিনিট" style="width:60px;" />
+                        <button class="btn-blue" onclick="updateMinute()">⏱️</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>⚽ ইভেন্ট যোগ করুন <span style="background:#2d7d2d;color:#fff;padding:1px 12px;border-radius:30px;font-size:9px;">লাইভ</span></h2>
+                    <div class="flex">
+                        <select id="eventTeamSelect" style="flex:1;"><option value="">দল</option></select>
+                        <select id="eventPlayerSelect" style="flex:1.5;"><option value="">প্লেয়ার</option></select>
+                        <select id="eventType" style="flex:1;">
+                            <option value="goal">⚽ গোল</option>
+                            <option value="assist">🎯 অ্যাসিস্ট</option>
+                            <option value="yellow">🟨 হলুদ</option>
+                            <option value="red">🟥 লাল</option>
+                            <option value="foul">🫸 ফাউল</option>
+                            <option value="substitution">🔄 সাব</option>
+                        </select>
+                        <input type="number" id="eventMinute" placeholder="মিনিট" style="width:50px;" />
+                        <button class="btn-primary" onclick="addEvent()">➕</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📋 লাইভ ইভেন্ট</h2>
+                    <div class="event-timeline" id="eventTimeline"><div class="empty-msg">কোন ইভেন্ট নেই</div></div>
+                </div>
+
+                <div class="card">
+                    <h2>📊 ম্যাচ পরিসংখ্যান</h2>
+                    <div id="liveStats"><div class="empty-msg">ম্যাচ নির্বাচন করুন</div></div>
+                </div>
+            </div>
+
+            <!-- ===== প্লেয়ার ===== -->
+            <div id="tab-players" class="tab-content">
+                <div class="card">
+                    <h2>👕 প্লেয়ার যোগ করুন</h2>
+                    <div class="flex">
+                        <select id="playerTeamSelect"></select>
+                        <input type="text" id="playerName" placeholder="নাম *" />
+                        <input type="text" id="playerPosition" placeholder="পজিশন" />
+                        <input type="number" id="playerJersey" placeholder="জার্সি" />
+                        <button class="btn-primary" onclick="addPlayer()">যোগ</button>
+                    </div>
+                </div>
+                <div class="card"><h2>📋 সকল প্লেয়ার</h2><div id="playerListAdmin"></div></div>
+            </div>
+
+            <!-- ===== দল ===== -->
+            <div id="tab-teams" class="tab-content">
+                <div class="card">
+                    <h2>🏟️ দল যোগ করুন</h2>
+                    <div class="flex">
+                        <input type="text" id="teamName" placeholder="দলের নাম *" />
+                        <input type="text" id="teamCoach" placeholder="কোচ" />
+                        <button class="btn-primary" onclick="addTeam()">যোগ</button>
+                    </div>
+                </div>
+                <div class="card"><h2>📋 দল তালিকা</h2><div id="teamListAdmin"></div></div>
+            </div>
+
+            <!-- ===== ম্যাচ ===== -->
+            <div id="tab-matches" class="tab-content">
+                <div class="card">
+                    <h2>📅 ম্যাচ তৈরি করুন</h2>
+                    <div class="flex">
+                        <select id="team1Select"></select>
+                        <select id="team2Select"></select>
+                        <input type="date" id="matchDate" />
+                        <input type="time" id="matchTime" />
+                        <input type="text" id="matchVenue" placeholder="মাঠ" />
+                        <button class="btn-primary" onclick="createMatch()">ম্যাচ তৈরি</button>
+                    </div>
+                </div>
+                <div class="card"><h2>📋 ম্যাচ তালিকা</h2><div id="matchListAdmin"></div></div>
+            </div>
+
+            <!-- ===== পয়েন্ট টেবিল ===== -->
+            <div id="tab-standings" class="tab-content">
+                <div class="card"><h2>🏆 পয়েন্ট টেবিল</h2><div id="standings"></div></div>
+                <div class="card"><h2>🏆 লিডারবোর্ড</h2><div id="leaderboard"></div></div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- পাবলিক ভিউ -->
+        <!-- ========================================================= -->
+        <div class="public-only">
+            <div class="card"><h2>👕 সকল প্লেয়ার</h2><div id="playerListPublic"></div></div>
+            <div class="card"><h2>📋 ম্যাচ তালিকা</h2><div id="matchListPublic"></div></div>
+            <div class="card"><h2>🏆 পয়েন্ট টেবিল</h2><div id="standingsPublic"></div></div>
+        </div>
+
+        <!-- ===== ফুটার ===== -->
+        <div class="footer-credit">
+            ⚽ <span class="gold">NPL Night Football Premier League 2026/2027</span> • এলাকাভিত্তিক<br>
+            🏆 Powered by: <span class="gold">Sky Star Boys Club</span> • Co-sponsored by: Brand RMT, Shakil And Brothers, Sharif And Brothers
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================================
+        //  ডেটা ম্যানেজমেন্ট - LocalStorage ব্যবহার করছে
+        // ============================================================
+        function getData() {
+            const raw = localStorage.getItem('nplFinalData');
+            if (raw) {
+                try { return JSON.parse(raw); } catch (e) {}
+            }
+            return { teams: [], players: [], matches: [], liveMatchId: null, matchId: 1, isLive: false, theme: 'dark' };
+        }
+
+        function saveData(data) {
+            localStorage.setItem('nplFinalData', JSON.stringify(data));
+        }
+
+        function getTeamName(id) {
+            const data = getData();
+            const t = data.teams.find(t => t.id === id);
+            return t ? t.name : '?';
+        }
+
+        function getPlayerName(id) {
+            const data = getData();
+            const p = data.players.find(p => p.id === id);
+            return p ? p.name : '?';
+        }
+
+        function getPlayerJersey(id) {
+            const data = getData();
+            const p = data.players.find(p => p.id === id);
+            return p ? p.jersey : '?';
+        }
+
+        function getTeamPlayers(teamId) {
+            const data = getData();
+            return data.players.filter(p => p.teamId === teamId);
+        }
+
+        // ============================================================
+        //  থিম
+        // ============================================================
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const data = getData();
+            data.theme = document.body.classList.contains('light-mode') ? 'light' : 'dark';
+            saveData(data);
+        }
+
+        // ============================================================
+        //  নোটিফিকেশন
+        // ============================================================
+        function showNotification(msg, isError = false) {
+            const el = document.getElementById('notification');
+            el.textContent = msg;
+            el.className = 'notification' + (isError ? ' error' : '');
+            el.style.display = 'block';
+            clearTimeout(el._timeout);
+            el._timeout = setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
+
+        // ============================================================
+        //  ভিউ ম্যানেজমেন্ট
+        // ============================================================
+        let isAdmin = false;
+
+        function setView(view) {
+            const body = document.body;
+            const pubBtn = document.getElementById('publicViewBtn');
+            const adminBtn = document.getElementById('adminViewBtn');
+
+            if (view === 'public') {
+                body.className = 'public-view';
+                pubBtn.classList.add('active');
+                adminBtn.classList.remove('active');
+                adminBtn.classList.remove('admin-btn');
+                isAdmin = false;
+                document.getElementById('modeBadge').textContent = '👀 পাবলিক ভিউ';
+                renderAll();
+                showNotification('👀 পাবলিক ভিউ');
+            } else if (view === 'admin' && isAdmin) {
+                body.className = 'admin-view';
+                adminBtn.classList.add('active');
+                adminBtn.classList.add('admin-btn');
+                pubBtn.classList.remove('active');
+                document.getElementById('modeBadge').textContent = '🔐 অ্যাডমিন মোড';
+                renderAll();
+                showNotification('🔐 অ্যাডমিন প্যানেল');
+            }
+        }
+
+        function openLogin() {
+            document.getElementById('loginOverlay').classList.add('show');
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('adminPassword').focus();
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        function closeLogin() {
+            document.getElementById('loginOverlay').classList.remove('show');
+        }
+
+        function adminLogin() {
+            const pass = document.getElementById('adminPassword').value;
+            if (pass === 'admin123') {
+                isAdmin = true;
+                closeLogin();
+                setView('admin');
+                document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                document.querySelector('.tab-bar button').classList.add('active');
+                document.getElementById('tab-live').classList.add('active');
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('loginOverlay').classList.contains('show')) {
+                closeLogin();
+            }
+        });
+
+        // ============================================================
+        //  ট্যাব
+        // ============================================================
+        document.querySelectorAll('.tab-bar button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                document.getElementById(this.dataset.tab).classList.add('active');
+            });
+        });
+
+        // ============================================================
+        //  রেন্ডার সব
+        // ============================================================
+        function renderAll() {
+            renderPlayerTeamSelect();
+            renderTeamSelects();
+            renderTeams();
+            renderPlayers();
+            renderMatches();
+            renderLiveMatches(); // <-- এই লাইনটি সবচেয়ে গুরুত্বপূর্ণ
+            renderLiveMatchSelect();
+            renderLiveStats();
+            renderEventTimeline();
+            renderStandings();
+            renderLeaderboard();
+            renderStandingsPublic();
+            populateEventPlayers();
+        }
+
+        // ============================================================
+        //  দল (TEAM)
+        // ============================================================
+        function addTeam() {
+            const name = document.getElementById('teamName').value.trim();
+            if (!name) { showNotification('দলের নাম দিন', true); return; }
+            const data = getData();
+            if (data.teams.find(t => t.name.toLowerCase() === name.toLowerCase())) {
+                showNotification('এই নামে দল আছে!', true);
+                return;
+            }
+            data.teams.push({
+                id: Date.now(),
+                name: name,
+                coach: document.getElementById('teamCoach').value.trim(),
+                played: 0, win: 0, draw: 0, loss: 0,
+                goalsFor: 0, goalsAgainst: 0, points: 0
+            });
+            saveData(data);
+            document.getElementById('teamName').value = '';
+            document.getElementById('teamCoach').value = '';
+            renderAll();
+            showNotification('✅ দল যোগ হয়েছে!');
+        }
+
+        function deleteTeam(teamId) {
+            if (!confirm('এই দল মুছবেন?')) return;
+            let data = getData();
+            data.teams = data.teams.filter(t => t.id !== teamId);
+            data.players = data.players.filter(p => p.teamId !== teamId);
+            data.matches = data.matches.filter(m => m.team1Id !== teamId && m.team2Id !== teamId);
+            if (data.liveMatchId) {
+                const match = data.matches.find(m => m.id === data.liveMatchId);
+                if (!match) data.liveMatchId = null;
+            }
+            saveData(data);
+            renderAll();
+            showNotification('🗑️ দল মুছে ফেলা হয়েছে');
+        }
+
+        function renderTeams() {
+            const data = getData();
+            const container = document.getElementById('teamListAdmin');
+            if (!container) return;
+            if (!data.teams.length) {
+                container.innerHTML = '<div class="empty-msg">কোন দল নেই</div>';
+                return;
+            }
+            let html = `<div class="table-wrap"><table><tr><th>#</th><th>দল</th><th>কোচ</th><th>প্লেয়ার</th><th>অ্যাকশন</th></tr>`;
+            data.teams.forEach((t, i) => {
+                const pCount = data.players.filter(p => p.teamId === t.id).length;
+                html += `<tr><td>${i+1}</td><td><strong>${t.name}</strong></td><td>${t.coach||'-'}</td><td>${pCount} জন</td><td><button class="btn-danger btn-sm" onclick="deleteTeam(${t.id})">🗑️</button></td></tr>`;
+            });
+            html += '</table></div>';
+            container.innerHTML = html;
+        }
+
+        // ============================================================
+        //  প্লেয়ার (PLAYER)
+        // ============================================================
+        function renderPlayerTeamSelect() {
+            const data = getData();
+            const sel = document.getElementById('playerTeamSelect');
+            if (!sel) return;
+            sel.innerHTML = '';
+            data.teams.forEach(t => {
+                sel.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+            });
+        }
+
+        function addPlayer() {
+            const teamId = parseInt(document.getElementById('playerTeamSelect').value);
+            const name = document.getElementById('playerName').value.trim();
+            if (!teamId || !name) { showNotification('দল ও নাম দিন', true); return; }
+
+            const data = getData();
+            data.players.push({
+                id: Date.now(),
+                teamId: teamId,
+                name: name,
+                position: document.getElementById('playerPosition').value.trim(),
+                jersey: parseInt(document.getElementById('playerJersey').value) || 0,
+                goals: 0, assists: 0, yellowCards: 0, redCards: 0, fouls: 0, matchesPlayed: 0
+            });
+            saveData(data);
+            document.getElementById('playerName').value = '';
+            document.getElementById('playerPosition').value = '';
+            document.getElementById('playerJersey').value = '';
+            renderAll();
+            showNotification('✅ প্লেয়ার যোগ হয়েছে!');
+        }
+
+        function deletePlayer(playerId) {
+            if (!confirm('প্লেয়ার মুছবেন?')) return;
+            let data = getData();
+            data.players = data.players.filter(p => p.id !== playerId);
+            saveData(data);
+            renderAll();
+            showNotification('🗑️ প্লেয়ার মুছে ফেলা হয়েছে');
+        }
+
+        function renderPlayers() {
+            const data = getData();
+
+            // অ্যাডমিন
+            const container = document.getElementById('playerListAdmin');
+            if (container) {
+                if (!data.players.length) {
+                    container.innerHTML = '<div class="empty-msg">কোন প্লেয়ার নেই</div>';
+                    return;
+                }
+                let html = `<div class="table-wrap"><table><tr><th>নাম</th><th>দল</th><th>পজিশন</th><th>জার্সি</th><th>⚽</th><th>🟨</th><th>🟥</th><th>অ্যাকশন</th></tr>`;
+                data.players.forEach(p => {
+                    html += `<tr><td><strong>${p.name}</strong></td><td>${getTeamName(p.teamId)}</td><td>${p.position||'-'}</td><td>${p.jersey||'-'}</td><td>${p.goals||0}</td><td>${p.yellowCards||0}</td><td>${p.redCards||0}</td><td><button class="btn-danger btn-sm" onclick="deletePlayer(${p.id})">🗑️</button></td></tr>`;
+                });
+                html += '</table></div>';
+                container.innerHTML = html;
+            }
+
+            // পাবলিক
+            const containerPub = document.getElementById('playerListPublic');
+            if (containerPub) {
+                if (!data.players.length) {
+                    containerPub.innerHTML = '<div class="empty-msg">কোন প্লেয়ার নেই</div>';
+                    return;
+                }
+                let html = `<div class="table-wrap"><table><tr><th>নাম</th><th>দল</th><th>পজিশন</th><th>জার্সি</th><th>⚽</th></tr>`;
+                data.players.forEach(p => {
+                    html += `<tr><td><strong>${p.name}</strong></td><td>${getTeamName(p.teamId)}</td><td>${p.position||'-'}</td><td>${p.jersey||'-'}</td><td>${p.goals||0}</td></tr>`;
+                });
+                html += '</table></div>';
+                containerPub.innerHTML = html;
+            }
+        }
+
+        // ============================================================
+        //  ম্যাচ (MATCH)
+        // ============================================================
+        function renderTeamSelects() {
+            const data = getData();
+            const s1 = document.getElementById('team1Select');
+            const s2 = document.getElementById('team2Select');
+            if (!s1 || !s2) return;
+            s1.innerHTML = '';
+            s2.innerHTML = '';
+            data.teams.forEach(t => {
+                s1.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+                s2.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+            });
+        }
+
+        function createMatch() {
+            const data = getData();
+            const t1 = parseInt(document.getElementById('team1Select').value);
+            const t2 = parseInt(document.getElementById('team2Select').value);
+            if (!t1 || !t2) { showNotification('দুটি দল নির্বাচন করুন', true); return; }
+            if (t1 === t2) { showNotification('একই দল নয়', true); return; }
+
+            const date = document.getElementById('matchDate').value || new Date().toISOString().slice(0, 10);
+            const time = document.getElementById('matchTime').value || '';
+            const venue = document.getElementById('matchVenue').value.trim() || 'TBD';
+
+            data.matches.push({
+                id: data.matchId++,
+                team1Id: t1,
+                team2Id: t2,
+                date: date,
+                time: time,
+                venue: venue,
+                score1: 0,
+                score2: 0,
+                status: 'upcoming',
+                events: [],
+                minute: 0
+            });
+            saveData(data);
+            document.getElementById('matchDate').value = '';
+            document.getElementById('matchTime').value = '';
+            document.getElementById('matchVenue').value = '';
+            renderAll();
+            showNotification('✅ ম্যাচ তৈরি হয়েছে!');
+        }
+
+        function deleteMatch(matchId) {
+            if (!confirm('ম্যাচ মুছবেন?')) return;
+            let data = getData();
+            data.matches = data.matches.filter(m => m.id !== matchId);
+            if (data.liveMatchId === matchId) {
+                data.liveMatchId = null;
+                data.isLive = false;
+            }
+            saveData(data);
+            renderAll();
+            showNotification('🗑️ ম্যাচ মুছে ফেলা হয়েছে');
+        }
+
+        function renderMatches() {
+            const data = getData();
+
+            // অ্যাডমিন
+            const container = document.getElementById('matchListAdmin');
+            if (container) {
+                if (!data.matches.length) {
+                    container.innerHTML = '<div class="empty-msg">কোন ম্যাচ নেই</div>';
+                    return;
+                }
+                let html = '';
+                data.matches.forEach(m => {
+                    const t1 = getTeamName(m.team1Id);
+                    const t2 = getTeamName(m.team2Id);
+                    const isLive = data.liveMatchId === m.id && data.isLive;
+                    html += `<div class="match-item">
+                        <div class="teams">${t1} 🆚 ${t2}</div>
+                        <div>🏟️ ${m.venue} | 📅 ${m.date}</div>
+                        <div style="font-weight:bold;">${m.score1||0} - ${m.score2||0}</div>
+                        <span class="status-badge ${isLive ? 'status-live' : m.status === 'upcoming' ? 'status-upcoming' : 'status-played'}">
+                            ${isLive ? '🔴 লাইভ' : m.status === 'upcoming' ? '⏳ আসন্ন' : '✅ শেষ'}
+                        </span>
+                        <button class="btn-danger btn-sm" onclick="deleteMatch(${m.id})">🗑️</button>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            }
+
+            // পাবলিক
+            const containerPub = document.getElementById('matchListPublic');
+            if (containerPub) {
+                if (!data.matches.length) {
+                    containerPub.innerHTML = '<div class="empty-msg">কোন ম্যাচ নেই</div>';
+                    return;
+                }
+                let html = '';
+                data.matches.forEach(m => {
+                    const t1 = getTeamName(m.team1Id);
+                    const t2 = getTeamName(m.team2Id);
+                    const isLive = data.liveMatchId === m.id && data.isLive;
+                    html += `<div class="match-item">
+                        <div class="teams">${t1} 🆚 ${t2}</div>
+                        <div>🏟️ ${m.venue}</div>
+                        <div style="font-weight:bold;">${m.score1||0} - ${m.score2||0}</div>
+                        <span class="status-badge ${isLive ? 'status-live' : m.status === 'upcoming' ? 'status-upcoming' : 'status-played'}">
+                            ${isLive ? '🔴 লাইভ' : m.status === 'upcoming' ? '⏳ আসন্ন' : '✅ শেষ'}
+                        </span>
+                    </div>`;
+                });
+                containerPub.innerHTML = html;
+            }
+        }
+
+        // ============================================================
+        //  লাইভ ম্যাচ ব্যবস্থাপনা - এই অংশটি সবচেয়ে গুরুত্বপূর্ণ
+        // ============================================================
+        function renderLiveMatchSelect() {
+            const data = getData();
+            const sel = document.getElementById('liveMatchSelect');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">-- ম্যাচ নির্বাচন করুন --</option>';
+            data.matches.forEach(m => {
+                const t1 = getTeamName(m.team1Id);
+                const t2 = getTeamName(m.team2Id);
+                sel.innerHTML += `<option value="${m.id}" ${data.liveMatchId === m.id ? 'selected' : ''}>${t1} vs ${t2}</option>`;
+            });
+        }
+
+        function loadLiveMatch() {
+            const matchId = parseInt(document.getElementById('liveMatchSelect').value);
+            if (!matchId) return;
+            const data = getData();
+            data.liveMatchId = matchId;
+            saveData(data);
+            renderLiveMatches();
+            renderLiveStats();
+            renderEventTimeline();
+            populateEventPlayers();
+            showNotification('✅ ম্যাচ লোড হয়েছে');
+        }
+
+        // === এই ফাংশনটি লাইভ দেখানোর জন্য সবচেয়ে গুরুত্বপূর্ণ ===
+        function startLiveMatch() {
+            const data = getData();
+            if (!data.liveMatchId) { 
+                showNotification('প্রথমে ম্যাচ নির্বাচন করুন', true); 
+                return; 
+            }
+            data.isLive = true;
+            const match = data.matches.find(m => m.id === data.liveMatchId);
+            if (match) {
+                match.status = 'live'; // এই লাইনটি লাইভ করার জন্য গুরুত্বপূর্ণ
+                match.score1 = 0;
+                match.score2 = 0;
+                match.events = [];
+                match.minute = 0;
+            }
+            saveData(data);
+            renderAll(); // সব রেন্ডার আপডেট হবে
+            showNotification('🔴 লাইভ শুরু হয়েছে!');
+        }
+
+        function pauseLiveMatch() {
+            const data = getData();
+            data.isLive = false;
+            saveData(data);
+            renderAll();
+            showNotification('⏸️ লাইভ বিরতি');
+        }
+
+        function endLiveMatch() {
+            const data = getData();
+            if (!data.liveMatchId) { showNotification('কোন লাইভ ম্যাচ নেই', true); return; }
+            data.isLive = false;
+            const match = data.matches.find(m => m.id === data.liveMatchId);
+            if (match) {
+                match.status = 'played';
+                // প্লেয়ার পরিসংখ্যান আপডেট
+                match.events.forEach(e => {
+                    const player = data.players.find(p => p.id === e.playerId);
+                    if (player) {
+                        if (e.type === 'goal') {
+                            player.goals = (player.goals || 0) + 1;
+                            player.matchesPlayed = (player.matchesPlayed || 0) + 1;
+                        }
+                        if (e.type === 'assist') player.assists = (player.assists || 0) + 1;
+                        if (e.type === 'yellow') player.yellowCards = (player.yellowCards || 0) + 1;
+                        if (e.type === 'red') player.redCards = (player.redCards || 0) + 1;
+                        if (e.type === 'foul') player.fouls = (player.fouls || 0) + 1;
+                    }
+                });
+                // দল পরিসংখ্যান আপডেট
+                const t1 = data.teams.find(t => t.id === match.team1Id);
+                const t2 = data.teams.find(t => t.id === match.team2Id);
+                if (t1 && t2) {
+                    t1.played++;
+                    t2.played++;
+                    t1.goalsFor += match.score1;
+                    t1.goalsAgainst += match.score2;
+                    t2.goalsFor += match.score2;
+                    t2.goalsAgainst += match.score1;
+                    if (match.score1 > match.score2) { t1.win++; t2.loss++; } 
+                    else if (match.score1 < match.score2) { t2.win++; t1.loss++; } 
+                    else { t1.draw++; t2.draw++; }
+                    t1.points = t1.win * 3 + t1.draw;
+                    t2.points = t2.win * 3 + t2.draw;
+                }
+            }
+            saveData(data);
+            renderAll();
+            showNotification('⏹️ ম্যাচ শেষ হয়েছে!');
+        }
+
+        function updateMinute() {
+            const minute = parseInt(document.getElementById('matchMinute').value);
+            if (isNaN(minute)) { showNotification('সঠিক মিনিট দিন', true); return; }
+            const data = getData();
+            const match = data.matches.find(m => m.id === data.liveMatchId);
+            if (match) {
+                match.minute = minute;
+            }
+            saveData(data);
+            renderLiveMatches();
+            showNotification(`⏱️ ${minute}' মিনিট`);
+        }
+
+        // ============================================================
+        //  ইভেন্ট ম্যানেজমেন্ট
+        // ============================================================
+        function populateEventPlayers() {
+            const data = getData();
+            const teamSel = document.getElementById('eventTeamSelect');
+            const playerSel = document.getElementById('eventPlayerSelect');
+            if (!teamSel || !playerSel) return;
+
+            teamSel.innerHTML = '<option value="">দল নির্বাচন</option>';
+            data.teams.forEach(t => {
+                teamSel.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+            });
+
+            teamSel.onchange = function() {
+                const teamId = parseInt(this.value);
+                playerSel.innerHTML = '<option value="">প্লেয়ার নির্বাচন</option>';
+                if (teamId) {
+                    const players = getTeamPlayers(teamId);
+                    players.forEach(p => {
+                        playerSel.innerHTML += `<option value="${p.id}">${p.name} (#${p.jersey||'?'})</option>`;
+                    });
+                }
+            };
+        }
+
+        function addEvent() {
+            const data = getData();
+            if (!data.liveMatchId || !data.isLive) {
+                showNotification('লাইভ ম্যাচ চলছে না', true);
+                return;
+            }
+
+            const teamId = parseInt(document.getElementById('eventTeamSelect').value);
+            const playerId = parseInt(document.getElementById('eventPlayerSelect').value);
+            const type = document.getElementById('eventType').value;
+            const minute = parseInt(document.getElementById('eventMinute').value) ||
+                data.matches.find(m => m.id === data.liveMatchId)?.minute || 0;
+
+            if (!teamId || !playerId) {
+                showNotification('দল ও প্লেয়ার নির্বাচন করুন', true);
+                return;
+            }
+
+            const match = data.matches.find(m => m.id === data.liveMatchId);
+            if (!match) return;
+
+            const event = {
+                id: Date.now(),
+                teamId: teamId,
+                playerId: playerId,
+                type: type,
+                minute: minute,
+                timestamp: new Date().toISOString()
+            };
+
+            match.events.push(event);
+            match.minute = minute;
+
+            if (type === 'goal') {
+                if (teamId === match.team1Id) match.score1 = (match.score1 || 0) + 1;
+                else match.score2 = (match.score2 || 0) + 1;
+            }
+
+            saveData(data);
+            renderLiveMatches();
+            renderLiveStats();
+            renderEventTimeline();
+            renderLeaderboard();
+            showNotification(`✅ ${getEventEmoji(type)} ${getPlayerName(playerId)} (${minute}')`);
+        }
+
+        function getEventEmoji(type) {
+            const map = { 'goal': '⚽', 'assist': '🎯', 'yellow': '🟨', 'red': '🟥', 'foul': '🫸', 'substitution': '🔄' };
+            return map[type] || '📌';
+        }
+
+        function getEventTypeName(type) {
+            const map = { 'goal': 'গোল', 'assist': 'অ্যাসিস্ট', 'yellow': 'হলুদ কার্ড', 'red': 'লাল কার্ড', 'foul': 'ফাউল', 'substitution': 'সাবস্টিটিউশন' };
+            return map[type] || type;
+        }
+
+        // ============================================================
+        //  রেন্ডার লাইভ - এই ফাংশনটি পাবলিক ভিউতে দেখাবে
+        // ============================================================
+        function renderLiveMatches() {
+            const data = getData();
+            const container = document.getElementById('liveMatchesContainer');
+            if (!container) return;
+
+            // শুধুমাত্র লাইভ স্ট্যাটাস যুক্ত ম্যাচ খুঁজছে
+            const liveMatches = data.matches.filter(m => m.status === 'live');
+
+            if (!liveMatches.length) {
+                container.innerHTML = '<div class="empty-msg" style="color:#aed6ae;">কোন লাইভ ম্যাচ চলছে না</div>';
+                const statusEl = document.getElementById('liveStatus');
+                if (statusEl) {
+                    statusEl.textContent = '⏸️ লাইভ নয়';
+                    statusEl.className = 'live-status inactive';
+                }
+                document.getElementById('liveEventsPreview').style.display = 'none';
+                return;
+            }
+
+            let html = '';
+            liveMatches.forEach(m => {
+                const t1 = getTeamName(m.team1Id);
+                const t2 = getTeamName(m.team2Id);
+                const minute = m.minute || 0;
+
+                const goals = m.events.filter(e => e.type === 'goal');
+                const goalText = goals.map(g => `${getPlayerName(g.playerId)} (${g.minute}')`).join(', ');
+
+                html += `
+                <div class="live-match-display">
+                    <div class="team-info">
+                        <div style="font-size:1.4rem;">🏟️</div>
+                        <div>
+                            <div class="team-name">${t1}</div>
+                            <div class="match-meta">${m.venue}</div>
+                        </div>
+                    </div>
+                    <div class="score-big">${m.score1 || 0} - ${m.score2 || 0}</div>
+                    <div class="team-info">
+                        <div>
+                            <div class="team-name">${t2}</div>
+                            <div class="match-meta">${m.date} ${m.time || ''}</div>
+                        </div>
+                        <div style="font-size:1.4rem;">🏟️</div>
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:6px;color:#aed6ae;font-size:10px;">
+                    <span>⏱️ ${minute}' মিনিট</span>
+                    <span>⚽ গোল: ${goalText || 'কোন গোল নেই'}</span>
+                    <span>🟨 ${m.events.filter(e => e.type === 'yellow').length} | 🟥 ${m.events.filter(e => e.type === 'red').length}</span>
+                    <span>🫸 ${m.events.filter(e => e.type === 'foul').length}</span>
+                </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            const statusEl = document.getElementById('liveStatus');
+            if (statusEl) {
+                statusEl.textContent = '🔴 লাইভ';
+                statusEl.className = 'live-status';
+            }
+
+            // ইভেন্ট প্রিভিউ
+            const previewContainer = document.getElementById('liveEventsPreview');
+            if (previewContainer) {
+                const allEvents = liveMatches[0]?.events || [];
+                if (allEvents.length) {
+                    previewContainer.style.display = 'block';
+                    let previewHtml = '';
+                    const recent = allEvents.slice(-5).reverse();
+                    recent.forEach(e => {
+                        previewHtml +=
+                            `<div class="event-mini">${getEventEmoji(e.type)} ${getPlayerName(e.playerId)} - ${getEventTypeName(e.type)} (${e.minute}')</div>`;
+                    });
+                    previewContainer.innerHTML = previewHtml;
+                } else {
+                    previewContainer.style.display = 'none';
+                }
+            }
+        }
+
+        function renderLiveStats() {
+            const data = getData();
+            const container = document.getElementById('liveStats');
+            if (!container) return;
+
+            const liveMatch = data.matches.find(m => m.id === data.liveMatchId);
+            if (!liveMatch || !data.isLive) {
+                container.innerHTML = '<div class="empty-msg">ম্যাচ নির্বাচন করুন</div>';
+                return;
+            }
+
+            const t1Goals = liveMatch.events.filter(e => e.type === 'goal' && e.teamId === liveMatch.team1Id).length;
+            const t2Goals = liveMatch.events.filter(e => e.type === 'goal' && e.teamId === liveMatch.team2Id).length;
+            const t1Yellow = liveMatch.events.filter(e => e.type === 'yellow' && e.teamId === liveMatch.team1Id).length;
+            const t2Yellow = liveMatch.events.filter(e => e.type === 'yellow' && e.teamId === liveMatch.team2Id).length;
+            const t1Red = liveMatch.events.filter(e => e.type === 'red' && e.teamId === liveMatch.team1Id).length;
+            const t2Red = liveMatch.events.filter(e => e.type === 'red' && e.teamId === liveMatch.team2Id).length;
+            const t1Fouls = liveMatch.events.filter(e => e.type === 'foul' && e.teamId === liveMatch.team1Id).length;
+            const t2Fouls = liveMatch.events.filter(e => e.type === 'foul' && e.teamId === liveMatch.team2Id).length;
+
+            container.innerHTML = `
+                <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;text-align:center;padding:6px 0;">
+                    <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:8px;">
+                        <div style="font-weight:bold;font-size:0.75rem;color:#f1c40f;">${getTeamName(liveMatch.team1Id)}</div>
+                        <div style="font-size:10px;color:#aed6ae;padding:1px 0;">⚽ ${t1Goals}</div>
+                        <div style="font-size:10px;color:#aed6ae;padding:1px 0;">🟨 ${t1Yellow}</div>
+                        <div style="font-size:10px;color:#aed6ae;padding:1px 0;">🟥 ${t1Red}</div>
+                        <div style="font-size:10px;color:#aed6ae;padding:1px 0;">🫸 ${t1Fouls}</div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;justify-content:center;font-size:1rem;color:#f1c40f;">⚡</div>
+                    <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:8px;">
+                        <div style="font-weight:bold;font-size:0.75rem;color:#f1c40f;">${getTeamName(liveMatch.team2Id)}</div>
+                        <div style="font-size:10px;color:#aed6ae;padding:1px 0;">⚽ ${t2Goals}</div>
+                        <div style="font-size:10px;color:#aed6ae;padding:1px 0;">🟨 ${t2Yellow}</div>
+                        <div style="font-size:10px;color:#aed6ae;padding:1px 0;">🟥 ${t2Red}</div>
+                        <div style="font-size:10px;color:#aed6ae;padding:1px 0;">🫸 ${t2Fouls}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderEventTimeline() {
+            const data = getData();
+            const container = document.getElementById('eventTimeline');
+            if (!container) return;
+
+            const liveMatch = data.matches.find(m => m.id === data.liveMatchId);
+            if (!liveMatch || !liveMatch.events.length) {
+                container.innerHTML = '<div class="empty-msg">কোন ইভেন্ট নেই</div>';
+                return;
+            }
+
+            const sorted = [...liveMatch.events].sort((a, b) => a.minute - b.minute);
+            let html = '';
+            sorted.forEach(e => {
+                const emoji = getEventEmoji(e.type);
+                const typeName = getEventTypeName(e.type);
+                const playerName = getPlayerName(e.playerId);
+                const teamName = getTeamName(e.teamId);
+                html += `<div class="event-item ${e.type}">
+                    <span class="time">${e.minute}'</span>
+                    <span class="icon">${emoji}</span>
+                    <span><strong>${playerName}</strong> (${teamName}) - ${typeName}</span>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // ============================================================
+        //  পয়েন্ট টেবিল
+        // ============================================================
+        function renderStandings() {
+            const data = getData();
+            const container = document.getElementById('standings');
+            if (!container) return;
+            if (!data.teams.length) {
+                container.innerHTML = '<div class="empty-msg">কোন দল নেই</div>';
+                return;
+            }
+
+            const sorted = [...data.teams].sort((a, b) => {
+                if (a.points !== b.points) return b.points - a.points;
+                const gdA = a.goalsFor - a.goalsAgainst;
+                const gdB = b.goalsFor - b.goalsAgainst;
+                return gdB - gdA;
+            });
+
+            let html = `<div class="table-wrap"><table><tr><th>#</th><th>দল</th><th>ম্যাচ</th><th>জয়</th><th>ড্র</th><th>হার</th><th>গোল</th><th>পয়েন্ট</th></tr>`;
+            sorted.forEach((t, i) => {
+                html += `<tr><td>${i+1}</td><td><strong>${t.name}</strong></td><td>${t.played||0}</td><td>${t.win||0}</td><td>${t.draw||0}</td><td>${t.loss||0}</td><td>${t.goalsFor||0}:${t.goalsAgainst||0}</td><td><strong>${t.points||0}</strong></td></tr>`;
+            });
+            html += '</table></div>';
+            container.innerHTML = html;
+        }
+
+        function renderStandingsPublic() {
+            const data = getData();
+            const container = document.getElementById('standingsPublic');
+            if (!container) return;
+            if (!data.teams.length) {
+                container.innerHTML = '<div class="empty-msg">কোন দল নেই</div>';
+                return;
+            }
+
+            const sorted = [...data.teams].sort((a, b) => {
+                if (a.points !== b.points) return b.points - a.points;
+                const gdA = a.goalsFor - a.goalsAgainst;
+                const gdB = b.goalsFor - b.goalsAgainst;
+                return gdB - gdA;
+            });
+
+            let html = `<div class="table-wrap"><table><tr><th>#</th><th>দল</th><th>ম্যাচ</th><th>পয়েন্ট</th></tr>`;
+            sorted.forEach((t, i) => {
+                html += `<tr><td>${i+1}</td><td><strong>${t.name}</strong></td><td>${t.played||0}</td><td><strong>${t.points||0}</strong></td></tr>`;
+            });
+            html += '</table></div>';
+            container.innerHTML = html;
+        }
+
+        // ============================================================
+        //  লিডারবোর্ড
+        // ============================================================
+        function renderLeaderboard() {
+            const data = getData();
+            const container = document.getElementById('leaderboard');
+            if (!container) return;
+
+            const sortedByGoals = [...data.players].sort((a, b) => (b.goals || 0) - (a.goals || 0));
+
+            let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">`;
+            html += `<div style="background:linear-gradient(135deg,#f1c40f,#f39c12);border-radius:10px;padding:12px;color:#fff;">
+                <h4 style="font-size:0.85rem;">🥇 সর্বোচ্চ গোল</h4>`;
+            if (sortedByGoals.length && sortedByGoals[0].goals > 0) {
+                sortedByGoals.slice(0, 5).forEach((p, i) => {
+                    const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+                    html += `<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:10px;">
+                        <span>${medals[i]||''} ${p.name} (${getTeamName(p.teamId)})</span>
+                        <span>⚽ ${p.goals}</span>
+                    </div>`;
+                });
+            } else {
+                html += `<div style="opacity:0.7;">কোন গোল নেই</div>`;
+            }
+            html += `</div></div>`;
+            container.innerHTML = html;
+        }
+
+        // ============================================================
+        //  শুরু
+        // ============================================================
+        const savedData = getData();
+        if (savedData.theme === 'light') {
+            document.body.classList.add('light-mode');
+        }
+
+        renderAll();
+        populateEventPlayers();
+        renderLiveMatchSelect();
+        showNotification('🏆 NPL Night Football Premier League 2026/2027 প্রস্তুত!');
+    </script>
+
+</body>
+</html>
